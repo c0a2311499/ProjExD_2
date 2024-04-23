@@ -2,6 +2,7 @@ import os
 import random
 import sys
 import pygame as pg
+import time
 
 
 WIDTH, HEIGHT = 1200, 600
@@ -47,13 +48,29 @@ def main():
 
     clock = pg.time.Clock()
     tmr = 0
+    fonto = pg.font.Font(None,80)
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
         if kk_rct.colliderect(bd_rct): # こうかとんと爆弾がぶつかったら
-            print("Game Over")
-            return
+             print("Game Over")
+             gamen = pg.Surface((1200,600)) # ブラックアウト
+             gamen_rct = gamen.get_rect()
+             pg.draw.rect(gamen, (0, 0, 0), (0,WIDTH,0,HEIGHT))
+             gamen.set_alpha(200)
+             screen.blit(gamen, gamen_rct)
+             txt = fonto.render("Game Over", True, (255,255,255)) # Game Over
+             txt_rct = txt.get_rect()
+             txt_rct.center = WIDTH/2, HEIGHT/2
+             screen.blit(txt,txt_rct)
+             img = pg.image.load("fig/8.png")
+             img_rct = img.get_rect()
+             img_rct.center = random.randint(0,WIDTH), random.randint(0,HEIGHT)
+             screen.blit(img, img_rct)
+             pg.display.update()
+             time.sleep(5)
+             return
         screen.blit(bg_img, [0, 0]) 
 
         #こうかとんの移動と表示
