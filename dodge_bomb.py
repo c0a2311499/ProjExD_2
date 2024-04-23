@@ -1,8 +1,9 @@
 import os
 import random
 import sys
-import pygame as pg
 import time
+import pygame as pg
+
 
 
 WIDTH, HEIGHT = 1200, 600
@@ -27,13 +28,12 @@ def check_bound(obj_rct:pg.Rect) -> tuple[bool, bool]:
     if obj_rct.top < 0 or HEIGHT < obj_rct.bottom:
         tate = False
     return yoko, tate
-    
 
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    #ここからこうかとんの設定
+    # ここからこうかとんの設定
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
     kk_rct = kk_img.get_rect()
@@ -48,6 +48,21 @@ def main():
 
     clock = pg.time.Clock()
     tmr = 0
+
+    RIGHT_img = pg.transform.flip(kk_img, False, True) #画像の反転を作成
+    LEFT_img = kk_img
+    img_dict = {
+         (0, 0):pg.transform.rotozoom(LEFT_img, 0, 1.0),
+         (0, -5):pg.transform.rotozoom(RIGHT_img, -90, 1.0),
+         (+5, -5):pg.transform.rotozoom(RIGHT_img, 225, 1.0), 
+         (+5, 0):pg.transform.rotozoom(RIGHT_img, 180, 1.0),
+         (+5, +5):pg.transform.rotozoom(RIGHT_img, 135, 1.0),
+         (0, +5):pg.transform.rotozoom(RIGHT_img, 90, 1.0),
+         (-5, +5):pg.transform.rotozoom(LEFT_img, 45, 1.0),
+         (-5, 0):pg.transform.rotozoom(LEFT_img, 0, 1.0),
+         (-5, -5):pg.transform.rotozoom(LEFT_img, -45, 1.0)
+    }
+
     fonto = pg.font.Font(None,80)
     while True:
         for event in pg.event.get():
@@ -64,7 +79,7 @@ def main():
              txt_rct = txt.get_rect()
              txt_rct.center = WIDTH/2, HEIGHT/2
              screen.blit(txt,txt_rct)
-             img = pg.image.load("fig/8.png")
+             img = pg.image.load("fig/8.png") # こうかとん
              img_rct = img.get_rect()
              img_rct.center = random.randint(0,WIDTH), random.randint(0,HEIGHT)
              screen.blit(img, img_rct)
@@ -76,10 +91,13 @@ def main():
         #こうかとんの移動と表示
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
+
         for k, v in DELTA.items():
             if key_lst[k]:
                 sum_mv[0] += v[0]
                 sum_mv[1] += v[1]
+        kk_img = img_dict[(sum_mv[0], sum_mv[1])]
+
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
